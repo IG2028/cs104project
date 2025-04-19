@@ -1,0 +1,8 @@
+<h2>Displaying: {{ filename }}</h2>
+<table>
+    <tr>{% for col in columns %}<th>{{ col }}</th>{% endfor %}</tr>
+    {% for row in log %}
+    <tr>{% for col in columns %}<td>{{ row[col] }}</td>{% endfor %}</tr>
+    {% endfor %}
+</table>
+<a href="{{ url_for('download_csv', filename=filename) }}">Download CSV</a>

@@ -1,5 +1,8 @@
-{
+BEGIN{
         i=0;
+        time=0;
+}
+{
         if($1 == "Mon"){
                 i=1;
         }
@@ -18,7 +21,6 @@
         else if($1=="Sat"){
                 i=6;
         }
-        time=0;
         hours=substr($4,1,2)
         min=substr($4,4,2)
         sec=substr($4,7,2)

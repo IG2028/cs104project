@@ -1,0 +1,13 @@
+<h3>Plots for {{ filename }}</h3>
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul>
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+<img src="{{ url_for('static', filename='images/' + filename + '-event_distro.png') }}">
+<img src="{{ url_for('static', filename='images/' + filename + '-level-count.png') }}">
+<img src="{{ url_for('static', filename='images/' + filename + '-event-freq.png') }}">

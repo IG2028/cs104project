@@ -1,0 +1,11 @@
+<form action="{{ url_for('upload_logs') }}" method="post" enctype="multipart/form-data">
+    <input type="file" name="logfile" accept=".log">
+    <button type="submit">Upload</button>
+</form>
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for msg in messages %}
+      <p style="color:red;">{{ msg }}</p>
+    {% endfor %}
+  {% endif %}
+{% endwith %}

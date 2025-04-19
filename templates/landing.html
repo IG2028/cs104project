@@ -1,0 +1,12 @@
+<h1>Welcome</h1>
+<a href="{{ url_for('upload') }}">Upload Logs</a>
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class="flashes">
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
