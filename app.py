@@ -6,7 +6,6 @@ import numpy as np
 def getSortedTime(key):                     #Function for key
     key=str(key)
     key=key.strip()
-    # flash(f"printing {key.split(' ')}")
     if len(key.split(" "))==5:
         Day,Month,Date,Time,Year = key.split(" ")
     elif len(key.split(" "))==4:
@@ -68,24 +67,24 @@ def upload_logs():                          #change to get multiple files
 # def display_logs():
 #     return render_template('display.html')
 
-@app.route('/display_logs/<filename>')
+@app.route('/display_logs/<filename>',methods=['GET','POST'])
 def display_log(filename):                  #change to add filters and sorts by also calling a bash script
     filepath=os.path.join(PROCESSED,filename)
     log=[]
     columns=['LineId','Time','Level','Content','EventId','EventTemplate']
-    # from_date=request.form.get('from')
-    # to_date=request.form.get('to')
-    # sort_by=request.form.get('sort_by')
-    # result=subprocess.run(
-    #     ['bash','bash_scripts/sorted_or_filtered.sh',filepath,from_date,to_date,sort_by],
-    #     capture_output=True,text=True
-    #     )
-    # if result.returncode !=0:
-    #     flash('Problem with sorting/filtering the file')
-    #     return redirect(url_for('landing'))
+    from_date=request.form.get('from')
+    to_date=request.form.get('to')
+    sort_by=request.form.get('sort_by')
+    result=subprocess.run(
+        ['bash','bash_scripts/sorted_or_filtered.sh',filepath,from_date,to_date,sort_by],
+       capture_output=True,text=True
+        )
+    if result.returncode !=0:
+        flash('Problem with sorting/filtering the file')
+        return redirect(url_for('landing'))
     try:
-        # outputfile=result.stdout.strip()
-        with open(filepath,'r') as file:             
+        outputfile=result.stdout.strip()
+        with open(outputfile,'r') as file:             
             for idx, line in enumerate(file):
                 if idx == 0:
                     continue
