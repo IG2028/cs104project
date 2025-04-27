@@ -1,13 +1,73 @@
-<h3>Plots for {{ filename }}</h3>
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <ul>
-      {% for message in messages %}
-        <li>{{ message }}</li>
-      {% endfor %}
-    </ul>
-  {% endif %}
-{% endwith %}
-<img src="{{ url_for('static', filename='images/' + filename + '-event_distro.png') }}">
-<img src="{{ url_for('static', filename='images/' + filename + '-level-count.png') }}">
-<img src="{{ url_for('static', filename='images/' + filename + '-event-freq.png') }}">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log Visualizations - {{ filename }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container wide">
+        <h1>Log Visualizations: {{ filename }}</h1>
+
+        <!-- Display flashed messages -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flashes">
+                {% for message in messages %}
+                    <li class="flash">{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        <div class="actions">
+             <a href="{{ url_for('display_log', filename=filename) }}" class="button">View Raw Data</a>
+             <a href="{{ url_for('upload') }}" class="button">Upload Another File</a>
+        </div>
+
+        <div class="filter-form">
+            <h2>Filter Data by Date Range</h2>
+            <form method="POST" action="{{ url_for('plots', filename=filename) }}">
+                 <div class="form-group-inline">
+                    <label for="from">From:</label>
+                    <input type="text" id="from" name="from" placeholder="e.g., Nov 23 22:29:28 2005" value="{{ request.form.get('from', '') }}">
+                 </div>
+                 <div class="form-group-inline">
+                    <label for="to">To:</label>
+                    <input type="text" id="to" name="to" placeholder="e.g., Jan 18 02:06:40 2006" value="{{ request.form.get('to', '') }}">
+                 </div>
+                 <div class="form-group-inline">
+                    <button type="submit" class="button">Filter & Regenerate Plots</button>
+                 </div>
+                 <p class="hint">Leave blank to use the full range. Use the format 'Month Day Date Time Year' (e.g., Jan 18 02:06:40 2006) or 'Month Date Time Year' (e.g., Jan 18 02:06:40 2006)</p>
+            </form>
+        </div>
+
+
+        <h2>Generated Plots</h2>
+        <div class="plots-container">
+            <div class="plot">
+                <h3>Event Frequency Over Time</h3>
+                <img src="{{ url_for('static', filename='images/' + filename + '-event_distro.png') }}?{{ range(1, 100000)|random }}" alt="Event Distribution Over Time">
+                 <a href="{{ url_for('download_plot', filename=filename + '-event_distro.png') }}" class="button download-button">Download Plot (PNG)</a>
+            </div>
+            <div class="plot">
+                <h3>Level State Distribution</h3>
+                <img src="{{ url_for('static', filename='images/' + filename + '-level-count.png') }}?{{ range(1, 100000)|random }}" alt="Level State Distribution">
+                <a href="{{ url_for('download_plot', filename=filename + '-level-count.png') }}" class="button download-button">Download Plot (PNG)</a>
+            </div>
+            <div class="plot">
+                <h3>Event Code Distribution</h3>
+                <img src="{{ url_for('static', filename='images/' + filename + '-event-freq.png') }}?{{ range(1, 100000)|random }}" alt="Event Code Distribution">
+                 <a href="{{ url_for('download_plot', filename=filename + '-event-freq.png') }}" class="button download-button">Download Plot (PNG)</a>
+            </div>
+        </div>
+
+         <div class="navigation">
+            <a href="{{ url_for('landing') }}">Back to Home</a>
+        </div>
+
+    </div>
+</body>
+</html>

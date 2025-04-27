@@ -1,8 +1,177 @@
-<h2>Displaying: {{ filename }}</h2>
-<table>
-    <tr>{% for col in columns %}<th>{{ col }}</th>{% endfor %}</tr>
-    {% for row in log %}
-    <tr>{% for col in columns %}<td>{{ row[col] }}</td>{% endfor %}</tr>
-    {% endfor %}
-</table>
-<a href="{{ url_for('download_csv', filename=filename) }}">Download CSV</a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log Table – {{ filename }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2 class="table-heading">
+            📄 Log Table – <span class="highlight">{{ filename }}</span>
+        </h2>
+
+        <!-- Action Buttons -->
+        <div class="button-group">
+            <a href="{{ url_for('plots', filename=filename) }}" class="button blue">📊 View Graphs & Plots</a>
+            <a href="{{ url_for('download_csv', filename=filename) }}" class="button dark">⬇ Download CSV</a>
+        </div>
+
+        <!-- Filters -->
+        <div class="filter-grid">
+            <div class="filter-block">
+                <label for="eventFilter" class="filter-label">Filter by Event ID:</label>
+                <select id="eventFilter" class="filter-select">
+                    <option value="">All</option>
+                    {% for i in range(1, 7) %}
+                        <option value="E{{ i }}">E{{ i }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-block">
+                <label for="levelFilter" class="filter-label">Filter by Level:</label>
+                <select id="levelFilter" class="filter-select">
+                    <option value="">All</option>
+                    <option value="notice">notice</option>
+                    <option value="error">error</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-wrapper">
+            <table id="logTable" class="log-table" data-sort-order="asc">
+                <thead>
+                    <tr>
+                        {% for col in columns %}
+                            <th onclick="sortTable({{ loop.index0 }})">{{ col }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    {% for row in log %}
+                        <tr>
+                            {% for col in columns %}
+                                <td>{{ row[col] }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div id="pagination" class="pagination">
+            <button onclick="prevPage()">⬅ Prev</button>
+            <span id="pageIndicator"></span>
+            <button onclick="nextPage()">Next ➡</button>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        const rowsPerPage = 10;
+        const table = document.getElementById('logTable');
+        const tableBody = document.getElementById('tableBody');
+        const pagination = document.getElementById('pagination');
+        const pageIndicator = document.getElementById('pageIndicator');
+        const eventFilter = document.getElementById('eventFilter');
+        const levelFilter = document.getElementById('levelFilter');
+
+        // Sort Table by Column
+        function sortTable(columnIndex) {
+            const rows = Array.from(tableBody.rows);
+            const isAscending = table.getAttribute('data-sort-order') !== 'asc';
+            
+            rows.sort((rowA, rowB) => {
+                const cellA = rowA.cells[columnIndex].innerText;
+                const cellB = rowB.cells[columnIndex].innerText;
+
+                if (isAscending) {
+                    return cellA.localeCompare(cellB);
+                } else {
+                    return cellB.localeCompare(cellA);
+                }
+            });
+
+            // Reorder rows
+            rows.forEach(row => tableBody.appendChild(row));
+
+            // Toggle sort order
+            table.setAttribute('data-sort-order', isAscending ? 'asc' : 'desc');
+        }
+
+        // Show a specific page of the table
+        function showPage(page) {
+            currentPage = page;
+
+            const rows = Array.from(tableBody.rows);
+            const start = (currentPage - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+
+            rows.forEach((row, index) => {
+                row.style.display = (index >= start && index < end) ? '' : 'none';
+            });
+
+            updatePagination(rows.length);
+        }
+
+        // Update the pagination buttons based on the number of rows
+        function updatePagination(totalRows) {
+            const totalPages = Math.ceil(totalRows / rowsPerPage);
+            pageIndicator.textContent = `Page ${currentPage} of ${totalPages}`;
+
+            // Show/hide pagination buttons
+            pagination.querySelector('button:first-child').style.display = (currentPage > 1) ? 'inline-block' : 'none';
+            pagination.querySelector('button:last-child').style.display = (currentPage < totalPages) ? 'inline-block' : 'none';
+        }
+
+        // Go to the previous page
+        function prevPage() {
+            if (currentPage > 1) {
+                showPage(currentPage - 1);
+            }
+        }
+
+        // Go to the next page
+        function nextPage() {
+            const totalRows = tableBody.rows.length;
+            const totalPages = Math.ceil(totalRows / rowsPerPage);
+
+            if (currentPage < totalPages) {
+                showPage(currentPage + 1);
+            }
+        }
+
+        // Filter table rows based on selected event and level
+        function filterTable() {
+            const eventValue = eventFilter.value.toLowerCase();
+            const levelValue = levelFilter.value.toLowerCase();
+
+            const rows = Array.from(tableBody.rows);
+            rows.forEach(row => {
+                const eventCell = row.cells[4].innerText.toLowerCase();  // Assuming Event ID is in the 5th column
+                const levelCell = row.cells[2].innerText.toLowerCase(); // Assuming Level is in the 3rd column
+
+                if ((eventValue === "" || eventCell.includes(eventValue)) && 
+                    (levelValue === "" || levelCell.includes(levelValue))) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+
+            showPage(1);  // Reset to page 1 after applying filters
+        }
+
+        // Initialize the table and show the first page
+        document.addEventListener('DOMContentLoaded', () => {
+            eventFilter.addEventListener('change', filterTable);
+            levelFilter.addEventListener('change', filterTable);
+
+            showPage(currentPage);
+        });
+    </script>
+</body>
+</html>

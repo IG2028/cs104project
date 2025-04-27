@@ -57,11 +57,11 @@ def upload_logs():                          #change to get multiple files
             capture_output=True,text=True
         )  
         if result.returncode !=0:
-            flash(f"{result.stderr.strip()} Invalid format of log file")
+            flash(f"{result.stderr.strip()}")
             return redirect(url_for('landing'))
         return redirect(url_for('display_log',filename=output_filename))
     else:
-        flash(f"{result.stderr.strip()} You have to upload .log file")
+        flash(f" You have to upload .log file")
         return redirect(url_for('landing'))
     
 # @app.route('/display_logs')    

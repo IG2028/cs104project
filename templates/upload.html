@@ -1,11 +1,186 @@
-<form action="{{ url_for('upload_logs') }}" method="post" enctype="multipart/form-data">
-    <input type="file" name="logfile" accept=".log">
-    <button type="submit">Upload</button>
-</form>
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    {% for msg in messages %}
-      <p style="color:red;">{{ msg }}</p>
-    {% endfor %}
-  {% endif %}
-{% endwith %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Log File</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <!-- Add specific styles for drag-and-drop -->
+    <style>
+        #drop-zone {
+            border: 2px dashed #ccc;
+            border-radius: 5px;
+            padding: 20px; /* Increased padding */
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            background-color: #f9f9f9;
+            transition: border-color 0.3s, background-color 0.3s;
+            max-width: 200px;
+            margin: auto;
+        }
+        #drop-zone.drag-over {
+            border-color: #007bff;
+            background-color: #e9ecef;
+        }
+        #drop-zone p {
+            margin: 0;
+            color: #555;
+        }
+        /* Hide the original file input but keep it accessible */
+        #logfile {
+            display: none;
+        }
+        #file-info {
+            margin-top: 10px;
+            font-style: italic;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Upload Apache Log File</h1>
+
+        <!-- Display flashed messages -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flashes">
+                {% for message in messages %}
+                    <li class="flash">{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        <p>Drag and drop a <code>.log</code> file into the zone below, or click the zone to select a file.</p>
+
+        <!-- The form remains the same -->
+        <form id="upload-form" method="POST" action="{{ url_for('upload_logs') }}" enctype="multipart/form-data">
+            <!-- The visually hidden file input -->
+            <input type="file" id="logfile" name="logfile" accept=".log" required>
+
+            <!-- The Drag and Drop Zone -->
+            <div id="drop-zone">
+                <p>Drag & Drop your .log file here</p>
+                <p>or</p>
+                <p>Click to select file</p>
+            </div>
+            <div id="file-info">No file selected.</div> <!-- To display selected file name -->
+
+            <div class="form-group">
+                <!-- Button is now outside the drop zone, triggers form submission -->
+                <button type="submit" class="button">Upload and Process</button>
+            </div>
+        </form>
+
+        <div class="navigation">
+            <a href="{{ url_for('landing') }}">Back to Home</a>
+        </div>
+    </div>
+
+    <!-- Add JavaScript at the end of the body -->
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('logfile');
+        const fileInfo = document.getElementById('file-info');
+        const uploadForm = document.getElementById('upload-form');
+
+        // Highlight drop zone when file is dragged over
+        dropZone.addEventListener('dragenter', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropZone.classList.add('drag-over');
+        });
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropZone.classList.add('drag-over'); // Keep highlighted
+        });
+
+        // Remove highlight when file leaves the drop zone
+        dropZone.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropZone.classList.remove('drag-over');
+        });
+
+        // Handle dropped file
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropZone.classList.remove('drag-over');
+
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                // Only accept the first file if multiple are dropped
+            //    if (files[0].name.endsWith('.log')) {
+                    fileInput.files = files; // Assign the dropped file(s) to the hidden input
+                    displayFileInfo(files[0]); // Update the display
+              //  } else {
+              //      alert('Please drop a .log file.');
+              //      clearFileInfo();
+              //  }
+            }
+        });
+
+        // Allow clicking the drop zone to trigger the file input
+        dropZone.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // Update display when file is selected via the dialog
+        fileInput.addEventListener('change', (e) => {
+            if (fileInput.files.length > 0) {
+                 if (fileInput.files[0].name.endsWith('.log')) {
+                    displayFileInfo(fileInput.files[0]);
+                  }// else {
+                //      alert('Please select a .log file.');
+                //      fileInput.value = ''; // Clear the invalid selection
+                //      clearFileInfo();
+                //  }
+            } else {
+                clearFileInfo();
+            }
+        });
+
+        // Function to display file info
+        function displayFileInfo(file) {
+             fileInfo.textContent = `Selected file: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+        }
+
+         // Function to clear file info
+        function clearFileInfo() {
+            fileInfo.textContent = 'No file selected.';
+            // Important: If using the same input after an error, clear its value
+             if(fileInput.value) {
+                try {
+                    fileInput.value = ''; // For modern browsers
+                } catch(err) { }
+                if (fileInput.value) { // For older IE versions
+                    var form = document.createElement('form');
+                    var parentNode = fileInput.parentNode;
+                    var ref = fileInput.nextSibling;
+                    form.appendChild(fileInput);
+                    form.reset();
+                    parentNode.insertBefore(fileInput, ref);
+                }
+            }
+        }
+
+        // Optional: Prevent form submission if no file is selected (client-side check)
+        uploadForm.addEventListener('submit', (e) => {
+            if (fileInput.files.length === 0) {
+                alert('Please select or drop a log file before uploading.');
+                e.preventDefault(); // Stop the form submission
+            }// } else if (!fileInput.files[0].name.endsWith('.log')) {
+            //      alert('Invalid file type. Please select a .log file.');
+            //      e.preventDefault(); // Stop the form submission
+            // }
+        });
+
+    </script>
+</body>
+</html>
