@@ -33,8 +33,9 @@
                 <label for="levelFilter" class="filter-label">Filter by Level:</label>
                 <select id="levelFilter" class="filter-select">
                     <option value="">All</option>
-                    <option value="notice">notice</option>
-                    <option value="error">error</option>
+                    {% for lvl in levels %}
+                        <option value="{{ lvl }}">{{ lvl }}</option>
+                    {% endfor %}
                 </select>
             </div>
         </div>

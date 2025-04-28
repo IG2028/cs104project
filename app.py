@@ -68,13 +68,14 @@ def upload_logs():                          #change to get multiple files
 # def display_logs():
 #     return render_template('display.html')
 
-@app.route('/display_logs/<filename>')
+@app.route('/display_logs/<filename>', methods=['GET', 'POST'])
 def display_log(filename):                  #change to add filters and sorts by also calling a bash script
     filepath=os.path.join(PROCESSED,filename)
+    filtered_filepath=os.path.join(PROCESSED,f"filtered_{filename}")
     log=[]
+    levels=set()
     columns=['LineId','Time','Level','Content','EventId','EventTemplate']
-    # from_date=request.form.get('from')
-    # to_date=request.form.get('to')
+    # 
     # sort_by=request.form.get('sort_by')
     # result=subprocess.run(
     #     ['bash','bash_scripts/sorted_or_filtered.sh',filepath,from_date,to_date,sort_by],
@@ -83,19 +84,41 @@ def display_log(filename):                  #change to add filters and sorts by 
     # if result.returncode !=0:
     #     flash('Problem with sorting/filtering the file')
     #     return redirect(url_for('landing'))
+
+    # Handle filtering/sorting
+    if request.method == 'POST':
+        event_filter = request.form.get('eventFilter', '')
+        level_filter = request.form.get('levelFilter', '')
+        sort_by = request.form.get('sort_by', '')
+        from_date=request.form.get('from', '')
+        to_date=request.form.get('to', '')
+
+        result = subprocess.run(
+            ['bash', 'bash_scripts/filter.sh', filepath, filtered_filepath, event_filter, level_filter, from_date, to_date, sort_by],
+            capture_output=True, text=True
+        )
+
+        if result.returncode != 0:
+            flash(f"Problem with sorting/filtering the file: {result.stderr.strip()}")
+            return redirect(url_for('landing'))
+        
+        path_to_read = filtered_filepath
+    else:
+        path_to_read = filepath
+
     try:
-        # outputfile=result.stdout.strip()
-        with open(filepath,'r') as file:             
+        with open(path_to_read, 'r') as file:
             for idx, line in enumerate(file):
                 if idx == 0:
                     continue
-                rows=dict()
-                line=line.strip()
-                row_list=line.split(",")
+                rows = dict()
+                row_list = line.strip().split(",")
                 for i in range(len(columns)):
-                    rows.update({columns[i]:row_list[i]})
+                    rows.update({columns[i]: row_list[i]})
                 log.append(rows)
-        return render_template('display.html',log=log,columns=columns,filename=filename)
+                levels.add(row_list[2])
+
+        return render_template('display.html', log=log, columns=columns, filename=filename, levels=sorted(levels))
     except Exception as e:
         flash(f"Problem in reading csv file: {e}")
         return redirect(url_for('landing'))
@@ -103,6 +126,11 @@ def display_log(filename):                  #change to add filters and sorts by 
 @app.route('/download/<filename>')
 def download_csv(filename):
     return send_from_directory(PROCESSED,filename,as_attachment=True) 
+
+@app.route('/download_filtered/<filename>')
+def download_filtered_csv(filename):
+    filtered_filename = f"filtered-{filename}"
+    return send_from_directory(PROCESSED, filtered_filename, as_attachment=True)
 
 @app.route('/download_plot/<filename>')
 def download_plot(filename):
