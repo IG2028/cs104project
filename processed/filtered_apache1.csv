@@ -1,0 +1,4 @@
+LineId,Time,Level,Content,EventId,EventTemplate
+12,Sun Dec 04 04:51:37 2005,notice,jk2_init() Found child 6736 in scoreboard slot 10,E1,jk2_init() Found child <*> in scoreboard slot <*>
+13,Sun Dec 04 04:51:38 2005,notice,jk2_init() Found child 6733 in scoreboard slot 7,E1,jk2_init() Found child <*> in scoreboard slot <*>
+14,Sun Dec 04 04:51:38 2005,notice,jk2_init() Found child 6734 in scoreboard slot 9,E1,jk2_init() Found child <*> in scoreboard slot <*>

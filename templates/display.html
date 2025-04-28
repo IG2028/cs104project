@@ -3,175 +3,333 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Log Table – {{ filename }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <title>Log Display – {{ filename }}</title>
+    {# <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}"> #} {# Link replaced by embedded style #}
+    <style>
+        /* Basic Styles */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #212529;
+        }
+        .container {
+            max-width: 1400px; /* Wider for tables */
+            margin: 25px auto;
+            background-color: #ffffff;
+            padding: 25px 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        }
+        .table-heading {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 1.75rem;
+            font-weight: 500;
+            color: #343a40;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 15px;
+        }
+        .highlight {
+            color: #007bff; /* Bootstrap primary blue */
+            font-weight: 600;
+        }
+
+        /* Buttons */
+        .button-group {
+            margin-bottom: 25px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px; /* Spacing between buttons */
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 5px;
+            color: white !important; /* Ensure text visibility */
+            background-color: #6c757d; /* Default gray */
+            text-decoration: none;
+            cursor: pointer;
+            text-align: center;
+            font-size: 0.95em;
+            font-weight: 500;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .button:hover {
+            opacity: 0.9;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .button.dark { background-color: #343a40; } /* Original download */
+        .button.green { background-color: #28a745; } /* Processed download */
+        .button.blue { background-color: #007bff; } /* Apply Filters */
+        /* Add other colors if needed */
+
+        /* Filter Form */
+        #filterForm {
+             margin-bottom: 30px;
+             padding: 20px 25px;
+             background-color: #f1f3f5;
+             border: 1px solid #dee2e6;
+             border-radius: 6px;
+        }
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Responsive grid */
+            gap: 18px 22px; /* row-gap column-gap */
+            align-items: end; /* Align items to the bottom */
+        }
+        .filter-block label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: 500;
+            font-size: 0.9em;
+            color: #495057;
+        }
+        .filter-block select, .filter-block input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 0.95em;
+            background-color: #fff;
+        }
+        .filter-block input[type="text"]::placeholder { color: #aaa; }
+        /* Span submit button if needed */
+        .filter-block.submit-block {
+             grid-column: 1 / -1; /* Span full width */
+             margin-top: 10px; /* Add space above */
+             text-align: right;
+        }
+
+        /* Table Styles */
+        .table-wrapper {
+            overflow-x: auto; /* Enable horizontal scroll for wide tables */
+            margin-bottom: 25px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+        }
+        .log-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em; /* Slightly smaller font for table */
+        }
+        .log-table th, .log-table td {
+            border: 1px solid #dee2e6;
+            padding: 12px 15px; /* More padding */
+            text-align: left;
+            white-space: nowrap; /* Prevent wrapping */
+            vertical-align: middle;
+        }
+        .log-table thead th {
+            background-color: #e9ecef;
+            font-weight: 600;
+            color: #495057;
+            position: sticky; /* Keep header visible on vertical scroll (optional) */
+            top: 0;
+            z-index: 1;
+        }
+        .log-table tbody tr:nth-child(even) {
+             background-color: #f8f9fa;
+        }
+        .log-table tbody tr:hover {
+             background-color: #dde1e6; /* Subtle hover */
+             cursor: default;
+        }
+        .no-results td {
+             text-align: center !important;
+             padding: 40px !important;
+             color: #6c757d;
+             font-style: italic;
+             font-size: 1.1em;
+        }
+
+        /* Pagination Styles */
+        .pagination {
+             text-align: center;
+             padding-top: 15px;
+        }
+        .pagination button {
+             padding: 7px 14px;
+             margin: 0 6px;
+             cursor: pointer;
+             border: 1px solid #ccc;
+             background-color: #fff;
+             border-radius: 4px;
+             font-size: 0.9em;
+             transition: background-color 0.2s ease;
+        }
+        .pagination button:hover:not(:disabled) {
+             background-color: #e9ecef;
+        }
+        .pagination button:disabled {
+             cursor: not-allowed;
+             opacity: 0.5;
+        }
+        .pagination span {
+             margin: 0 12px;
+             vertical-align: middle;
+             color: #555;
+             font-size: 0.95em;
+        }
+
+    </style>
 </head>
 <body>
     <div class="container">
+
         <h2 class="table-heading">
-            📄 Log Table – <span class="highlight">{{ filename }}</span>
+            📄 Log Display – <span class="highlight">{{ filename }}</span>
         </h2>
 
         <!-- Action Buttons -->
         <div class="button-group">
+             {# This download button links to the potentially stale file generated by the last POST #}
+             {# This relies on the fixed filename 'filtered-{filename}' used in Flask #}
+            <a href="{{ url_for('download_filtered_csv', filename=filename) }}" class="button green">⬇ Download Processed CSV</a>
+            {# This button downloads the original, unprocessed CSV #}
+            <a href="{{ url_for('download_csv', filename=filename) }}" class="button dark">⬇ Download Full CSV</a>
             <a href="{{ url_for('plots', filename=filename) }}" class="button blue">📊 View Graphs & Plots</a>
-            <a href="{{ url_for('download_csv', filename=filename) }}" class="button dark">⬇ Download CSV</a>
         </div>
 
-        <!-- Filters -->
-        <div class="filter-grid">
-            <div class="filter-block">
-                <label for="eventFilter" class="filter-label">Filter by Event ID:</label>
-                <select id="eventFilter" class="filter-select">
-                    <option value="">All</option>
-                    {% for i in range(1, 7) %}
-                        <option value="E{{ i }}">E{{ i }}</option>
-                    {% endfor %}
-                </select>
+        <!-- Form for Filters/Sort - Submits via POST -->
+        {# Use url_for with the correct function name 'display_log' #}
+        <form id="filterForm" method="POST" action="{{ url_for('display_log', filename=filename) }}">
+            <div class="filter-grid">
+                <div class="filter-block">
+                    <label for="eventFilter">Event ID:</label>
+                    {# Use names that match Flask's request.form.get() #}
+                    <select id="eventFilter" name="eventFilter">
+                        <option value="">All</option>
+                        {# Hardcode E1-E6 #}
+                        {% for i in range(1, 7) %}
+                             {# Check request.form for POST data persistence (if needed, Flask doesn't pass it back by default on POST->Render) #}
+                            <option value="E{{ i }}" {% if request.form.get('eventFilter') == "E" ~ i %}selected{% endif %}>E{{ i }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="filter-block">
+                    <label for="levelFilter">Level:</label>
+                    <select id="levelFilter" name="levelFilter">
+                        <option value="">All</option>
+                         {% for lvl in levels %} {# Use levels passed from Flask #}
+                            <option value="{{ lvl }}" {% if request.form.get('levelFilter') == lvl %}selected{% endif %}>{{ lvl }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="filter-block">
+                    <label for="from">From Date:</label> {# Match Flask request.form.get('from') #}
+                    <input type="text" id="from" name="from" placeholder="e.g., Nov 23 22:29:28 2005" value="{{ request.form.get('from', '') }}">
+                </div>
+                 <div class="filter-block">
+                    <label for="to">To Date:</label> {# Match Flask request.form.get('to') #}
+                    <input type="text" id="to" name="to" placeholder="e.g., Jan 18 02:06:40 2006" value="{{ request.form.get('to', '') }}">
+                </div>
+                <div class="filter-block">
+                    <label for="sort_by">Sort By:</label> {# Match Flask request.form.get('sort_by') #}
+                    <select id="sort_by" name="sort_by">
+                         {% set current_sort = request.form.get('sort_by', 'LineId') %} {# Default sort key #}
+                         <option value="LineId" {% if current_sort == 'LineId' %}selected{% endif %}>LineId (Default)</option>
+                         {% for col in columns %}
+                            {% if col in ['Time', 'Level', 'EventId'] %} {# Sortable columns #}
+                                <option value="{{ col }}" {% if current_sort == col %}selected{% endif %}>{{ col }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                {# Add an explicit submit button #}
+                <div class="filter-block submit-block">
+                     <button type="submit" class="button blue">Apply Filters / Sort</button>
+                </div>
             </div>
-            <div class="filter-block">
-                <label for="levelFilter" class="filter-label">Filter by Level:</label>
-                <select id="levelFilter" class="filter-select">
-                    <option value="">All</option>
-                    {% for lvl in levels %}
-                        <option value="{{ lvl }}">{{ lvl }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-        </div>
+        </form>
 
         <!-- Table -->
         <div class="table-wrapper">
-            <table id="logTable" class="log-table" data-sort-order="asc">
+            <table id="logTable" class="log-table">
                 <thead>
                     <tr>
-                        {% for col in columns %}
-                            <th onclick="sortTable({{ loop.index0 }})">{{ col }}</th>
+                        {% for col in columns %} {# Use columns list passed from Flask #}
+                            <th>{{ col }}</th>
                         {% endfor %}
                     </tr>
                 </thead>
                 <tbody id="tableBody">
-                    {% for row in log %}
-                        <tr>
-                            {% for col in columns %}
-                                <td>{{ row[col] }}</td>
-                            {% endfor %}
+                    {# Data rendered server-side. Loop through list of dicts ('log') #}
+                    {# Use dictionary access `row[col]` #}
+                    {% if log %} {# Check if log list is not empty #}
+                        {% for row in log %} {# Loop through the list of dictionaries #}
+                            <tr>
+                                {% for col in columns %} {# Loop through column names to maintain order #}
+                                    <td>{{ row.get(col, '') }}</td> {# Use .get for safety #}
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr class="no-results">
+                            <td colspan="{{ columns|length }}">No log entries found or none match filters.</td>
                         </tr>
-                    {% endfor %}
+                    {% endif %}
                 </tbody>
             </table>
         </div>
 
-        <!-- Pagination -->
+        <!-- Pagination (JS handles display only) -->
         <div id="pagination" class="pagination">
-            <button onclick="prevPage()">⬅ Prev</button>
-            <span id="pageIndicator"></span>
-            <button onclick="nextPage()">Next ➡</button>
+            <button id="prevBtn" onclick="prevPage()" disabled>⬅ Prev</button>
+            <span id="pageIndicator">Page 1 of 1</span>
+            <button id="nextBtn" onclick="nextPage()" disabled>Next ➡</button>
         </div>
     </div>
 
     <script>
-        let currentPage = 1;
-        const rowsPerPage = 10;
-        const table = document.getElementById('logTable');
+        // --- Configuration ---
+        const rowsPerPage = 25; // Adjust as needed
+
+        // --- DOM Elements ---
         const tableBody = document.getElementById('tableBody');
-        const pagination = document.getElementById('pagination');
+        // Get rows rendered by Flask/Jinja
+        const allRenderedRows = Array.from(tableBody.querySelectorAll('tr'));
         const pageIndicator = document.getElementById('pageIndicator');
-        const eventFilter = document.getElementById('eventFilter');
-        const levelFilter = document.getElementById('levelFilter');
+        const prevButton = document.getElementById('prevBtn');
+        const nextButton = document.getElementById('nextBtn');
+        const paginationDiv = document.getElementById('pagination');
+        // No download button JS needed if using simple <a> link
 
-        // Sort Table by Column
-        function sortTable(columnIndex) {
-            const rows = Array.from(tableBody.rows);
-            const isAscending = table.getAttribute('data-sort-order') !== 'asc';
-            
-            rows.sort((rowA, rowB) => {
-                const cellA = rowA.cells[columnIndex].innerText;
-                const cellB = rowB.cells[columnIndex].innerText;
+        // --- State ---
+        let currentPage = 1;
+        const totalRows = allRenderedRows.length; // Count rows rendered by server
+        const totalPages = Math.max(1, Math.ceil(totalRows / rowsPerPage));
 
-                if (isAscending) {
-                    return cellA.localeCompare(cellB);
-                } else {
-                    return cellB.localeCompare(cellA);
-                }
-            });
-
-            // Reorder rows
-            rows.forEach(row => tableBody.appendChild(row));
-
-            // Toggle sort order
-            table.setAttribute('data-sort-order', isAscending ? 'asc' : 'desc');
-        }
-
-        // Show a specific page of the table
+        // --- Simple Pagination Display Logic ---
         function showPage(page) {
             currentPage = page;
-
-            const rows = Array.from(tableBody.rows);
             const start = (currentPage - 1) * rowsPerPage;
             const end = start + rowsPerPage;
-
-            rows.forEach((row, index) => {
+            // Only show/hide rows already in the DOM
+            allRenderedRows.forEach((row, index) => {
                 row.style.display = (index >= start && index < end) ? '' : 'none';
             });
-
-            updatePagination(rows.length);
-        }
-
-        // Update the pagination buttons based on the number of rows
-        function updatePagination(totalRows) {
-            const totalPages = Math.ceil(totalRows / rowsPerPage);
             pageIndicator.textContent = `Page ${currentPage} of ${totalPages}`;
-
-            // Show/hide pagination buttons
-            pagination.querySelector('button:first-child').style.display = (currentPage > 1) ? 'inline-block' : 'none';
-            pagination.querySelector('button:last-child').style.display = (currentPage < totalPages) ? 'inline-block' : 'none';
+            prevButton.disabled = (currentPage === 1);
+            nextButton.disabled = (currentPage === totalPages);
         }
+        function nextPage() { if (currentPage < totalPages) { showPage(currentPage + 1); } }
+        function prevPage() { if (currentPage > 1) { showPage(currentPage - 1); } }
 
-        // Go to the previous page
-        function prevPage() {
-            if (currentPage > 1) {
-                showPage(currentPage - 1);
-            }
-        }
-
-        // Go to the next page
-        function nextPage() {
-            const totalRows = tableBody.rows.length;
-            const totalPages = Math.ceil(totalRows / rowsPerPage);
-
-            if (currentPage < totalPages) {
-                showPage(currentPage + 1);
-            }
-        }
-
-        // Filter table rows based on selected event and level
-        function filterTable() {
-            const eventValue = eventFilter.value.toLowerCase();
-            const levelValue = levelFilter.value.toLowerCase();
-
-            const rows = Array.from(tableBody.rows);
-            rows.forEach(row => {
-                const eventCell = row.cells[4].innerText.toLowerCase();  // Assuming Event ID is in the 5th column
-                const levelCell = row.cells[2].innerText.toLowerCase(); // Assuming Level is in the 3rd column
-
-                if ((eventValue === "" || eventCell.includes(eventValue)) && 
-                    (levelValue === "" || levelCell.includes(levelValue))) {
-                    row.style.display = "";
-                } else {
-                    row.style.display = "none";
-                }
-            });
-
-            showPage(1);  // Reset to page 1 after applying filters
-        }
-
-        // Initialize the table and show the first page
+        // --- Initialization ---
         document.addEventListener('DOMContentLoaded', () => {
-            eventFilter.addEventListener('change', filterTable);
-            levelFilter.addEventListener('change', filterTable);
-
-            showPage(currentPage);
+            // Setup initial pagination view based on server-rendered rows
+            if (totalRows > 0) {
+                showPage(1);
+                paginationDiv.style.display = 'block'; // Or 'flex'
+            } else {
+                paginationDiv.style.display = 'none';
+                // Message is rendered by Jinja if log list is empty
+            }
         });
     </script>
 </body>

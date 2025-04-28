@@ -129,7 +129,7 @@ def download_csv(filename):
 
 @app.route('/download_filtered/<filename>')
 def download_filtered_csv(filename):
-    filtered_filename = f"filtered-{filename}"
+    filtered_filename = f"filtered_{filename}"
     return send_from_directory(PROCESSED, filtered_filename, as_attachment=True)
 
 @app.route('/download_plot/<filename>')
