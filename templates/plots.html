@@ -4,70 +4,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Log Visualizations - {{ filename }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style> /* Simplified CSS (as provided before) */ </style>
 </head>
 <body>
     <div class="container wide">
         <h1>Log Visualizations: {{ filename }}</h1>
-
-        <!-- Display flashed messages -->
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <ul class="flashes">
-                {% for message in messages %}
-                    <li class="flash">{{ message }}</li>
-                {% endfor %}
-                </ul>
-            {% endif %}
-        {% endwith %}
-
+        {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} <ul class="flashes"> {% for category, message in messages %} <li class="flash">{{ message }}</li> {% endfor %} </ul> {% endif %} {% endwith %}
+        <!-- Action Buttons -->
         <div class="actions">
-             <a href="{{ url_for('display_log', filename=filename) }}" class="button">View Raw Data</a>
+             {# *** CORRECTED: Use function name 'display_log' *** #}
+             <a href="{{ url_for('display_log', filename=filename) }}" class="button">View Data Table</a>
+             {# *** CORRECTED: Use function name 'upload' for GET /uploads *** #}
              <a href="{{ url_for('upload') }}" class="button">Upload Another File</a>
         </div>
-
+        <!-- Filter Form -->
         <div class="filter-form">
             <h2>Filter Data by Date Range</h2>
+             {# *** CORRECTED: Use function name 'plots' for POST action *** #}
             <form method="POST" action="{{ url_for('plots', filename=filename) }}">
-                 <div class="form-group-inline">
-                    <label for="from">From:</label>
-                    <input type="text" id="from" name="from" placeholder="e.g., Nov 23 22:29:28 2005" value="{{ request.form.get('from', '') }}">
-                 </div>
-                 <div class="form-group-inline">
-                    <label for="to">To:</label>
-                    <input type="text" id="to" name="to" placeholder="e.g., Jan 18 02:06:40 2006" value="{{ request.form.get('to', '') }}">
-                 </div>
-                 <div class="form-group-inline">
-                    <button type="submit" class="button">Filter & Regenerate Plots</button>
-                 </div>
-                 <p class="hint">Leave blank to use the full range. Use the format 'Month Day Date Time Year' (e.g., Jan 18 02:06:40 2006) or 'Month Date Time Year' (e.g., Jan 18 02:06:40 2006)</p>
+                 <div class="form-group-inline"> <label for="from">From Date:</label> <input type="text" id="from" name="from" placeholder="e.g., Nov 23 22:29:28 2005" value="{{ from_date }}"> </div>
+                 <div class="form-group-inline"> <label for="to">To Date:</label> <input type="text" id="to" name="to" placeholder="e.g., Jan 18 02:06:40 2006" value="{{ to_date }}"> </div>
+                 <div class="form-group-inline"> <button type="submit" class="button">Filter & Regenerate Plots</button> </div>
+                 <p class="hint">Leave blank for full range. Format like 'Nov 23 22:29:28 2005'.</p>
             </form>
         </div>
-
-
-        <h2>Generated Plots</h2>
-        <div class="plots-container">
-            <div class="plot">
-                <h3>Event Frequency Over Time</h3>
-                <img src="{{ url_for('static', filename='images/' + filename + '-event_distro.png') }}?{{ range(1, 100000)|random }}" alt="Event Distribution Over Time">
-                 <a href="{{ url_for('download_plot', filename=filename + '-event_distro.png') }}" class="button download-button">Download Plot (PNG)</a>
-            </div>
-            <div class="plot">
-                <h3>Level State Distribution</h3>
-                <img src="{{ url_for('static', filename='images/' + filename + '-level-count.png') }}?{{ range(1, 100000)|random }}" alt="Level State Distribution">
-                <a href="{{ url_for('download_plot', filename=filename + '-level-count.png') }}" class="button download-button">Download Plot (PNG)</a>
-            </div>
-            <div class="plot">
-                <h3>Event Code Distribution</h3>
-                <img src="{{ url_for('static', filename='images/' + filename + '-event-freq.png') }}?{{ range(1, 100000)|random }}" alt="Event Code Distribution">
-                 <a href="{{ url_for('download_plot', filename=filename + '-event-freq.png') }}" class="button download-button">Download Plot (PNG)</a>
-            </div>
-        </div>
-
-         <div class="navigation">
-            <a href="{{ url_for('landing') }}">Back to Home</a>
-        </div>
-
+        <!-- Plot Selection Dropdown -->
+        <div class="plot-selector-area"> <label for="plotSelector">Select Plot:</label> <select id="plotSelector"> <option value="">-- Select --</option> <option value="event_freq">Event Frequency</option> <option value="level_dist">Level Distribution</option> <option value="event_code">Event Code Distribution</option> </select> </div>
+        <!-- Area to Display Selected Plot -->
+        <div id="plotDisplayArea"> <h3 id="plotTitle"></h3> <img id="plotImage" src="" alt="Plot Image"> <br> <a id="plotDownloadLink" href="#" class="button download-button">Download This Plot</a> </div>
+        {% if error %} <p style="color: red; border: 1px solid red; padding: 8px; background-color: #fee;">Error: {{ error }}</p> {% endif %}
+         <!-- Navigation -->
+         <div class="navigation"> <a href="{{ url_for('landing') }}">Home</a> </div>
     </div>
+    <script>
+        // Simplified JS (as provided before)
+        var plotSelect = document.getElementById('plotSelector'); var displayArea = document.getElementById('plotDisplayArea'); var titleElement = document.getElementById('plotTitle'); var imageElement = document.getElementById('plotImage'); var downloadLink = document.getElementById('plotDownloadLink');
+        var baseFilename = "{{ filename }}"; var imageBase = "{{ url_for('static', filename='images/') }}";
+        
+        var downloadBase = "{{ url_for('download_plot', filename='_PLACEHOLDER_') }}".replace('_PLACEHOLDER_', '');
+        plotSelect.onchange = function() { /* ... rest of JS as before ... */
+            var selected = plotSelect.value; var imageSrc = ""; var downloadHref = "#"; var plotTitleText = ""; var imgAlt = "Plot"; var makeVisible = false;
+            if (selected === "event_freq") { plotTitleText = "Event Frequency Over Time"; imageSrc = imageBase + baseFilename + "-event_distro.png"; downloadHref = downloadBase + baseFilename + "-event_distro.png"; imgAlt = "Event Frequency Plot"; makeVisible = true; }
+            else if (selected === "level_dist") { plotTitleText = "Level State Distribution"; imageSrc = imageBase + baseFilename + "-level-count.png"; downloadHref = downloadBase + baseFilename + "-level-count.png"; imgAlt = "Level Distribution Plot"; makeVisible = true; }
+            else if (selected === "event_code") { plotTitleText = "Event Code Distribution"; imageSrc = imageBase + baseFilename + "-event-freq.png"; downloadHref = downloadBase + baseFilename + "-event-freq.png"; imgAlt = "Event Code Plot"; makeVisible = true; }
+            titleElement.textContent = plotTitleText; imageElement.src = imageSrc ? imageSrc + "?r=" + Math.random() : ""; imageElement.alt = imgAlt; downloadLink.href = downloadHref;
+            if (makeVisible) { displayArea.style.display = 'block'; imageElement.style.display = 'block'; downloadLink.style.display = 'inline-block'; } else { displayArea.style.display = 'none'; } };
+    </script>
 </body>
 </html>

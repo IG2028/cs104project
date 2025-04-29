@@ -1,50 +1,297 @@
-/* General Styles */
+/* --- static/css/styles.css --- */
+/* Combined styles for landing, upload, display, and plots pages */
+
+/* Basic Reset & Body Styles */
 body {
-    font-family: sans-serif;
-    line-height: 1.6;
+    font-family: sans-serif; /* Basic system font */
+    line-height: 1.5;
     margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-    color: #333;
+    padding: 20px; /* Add padding around the body */
+    background-color: #f0f0f0; /* Simple light gray background */
+    color: #333; /* Default text color */
 }
 
+/* General Container */
 .container {
-    width: 80%;
-    margin: 20px auto;
-    background: #fff;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
+    max-width: 1200px; /* Max width for content */
+    margin: 20px auto; /* Center container with top/bottom margin */
+    background-color: #ffffff; /* White background for content */
+    padding: 20px 25px; /* Internal padding */
+    border: 1px solid #ccc; /* Simple border */
+    border-radius: 4px; /* Slight rounding */
 }
-
+/* Wider container variant if needed (like for plots/display page) */
 .container.wide {
-    width: 95%;
+    max-width: 1400px;
 }
 
+/* Headings */
 h1, h2, h3 {
-    color: #0056b3; /* A blue tone */
+    color: #222; /* Darker headings */
+    margin-top: 0;
     margin-bottom: 15px;
 }
-
-h1 {
-    text-align: center;
-    border-bottom: 2px solid #eee;
+h1 { /* Used on Landing, Upload, Plots */
+    font-size: 1.8em;
     padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+    text-align: center; /* Often centered */
 }
-
-p {
+h2 { /* Used on Display, Plots */
+    font-size: 1.4em;
+    margin-top: 25px; /* Space above section headings */
+    margin-bottom: 15px;
+    border-bottom: 1px dashed #eee; /* Subtle separator */
+    padding-bottom: 5px;
+}
+h3 { /* Used in Plots display area */
+    font-size: 1.15em;
     margin-bottom: 10px;
+    font-weight: bold;
+}
+/* Specific H2 for Display page title */
+.table-heading {
+     font-size: 1.6em; /* Make display title slightly larger */
+     border-bottom-style: solid;
+     text-align: left; /* Align left */
 }
 
+
+/* Paragraphs and Links */
+p {
+    margin-bottom: 1em; /* Spacing below paragraphs */
+    color: #444;
+}
 a {
-    color: #007bff;
+    color: #0066cc; /* Standard link blue */
     text-decoration: none;
 }
-
 a:hover {
     text-decoration: underline;
 }
+code { /* For inline code like .log */
+    background-color: #eee;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-family: monospace;
+}
+.highlight { /* For filename highlight */
+     color: #0066cc;
+     font-weight: bold;
+}
 
+/* Buttons */
+.button {
+    display: inline-block;
+    padding: 9px 15px;
+    margin-right: 8px;
+    margin-bottom: 8px; /* Handle wrapping */
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    color: #333 !important; /* Ensure text readable */
+    background-color: #e5e5e5; /* Basic gray button */
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 0.95em;
+    text-align: center;
+    vertical-align: middle;
+}
+.button:hover {
+    background-color: #d5d5d5; /* Slightly darker on hover */
+    border-color: #999;
+}
+/* Color Variants for Buttons */
+.button.blue { background-color: #cce5ff; border-color: #b8daff; color: #004085 !important; }
+.button.blue:hover { background-color: #b8daff; }
+.button.dark { background-color: #d6d8db; border-color: #c6c8ca; color: #383d41 !important; }
+.button.dark:hover { background-color: #c6c8ca; }
+.button.green { background-color: #d4edda; border-color: #c3e6cb; color: #155724 !important; }
+.button.green:hover { background-color: #c3e6cb; }
+/* Specific styling for download buttons on plots page */
+.button.download-button {
+    font-size: 0.85em;
+    padding: 6px 10px;
+    margin-top: 10px;
+    background-color: #e2e6ea;
+    border-color: #dae0e5;
+    color: #343a40 !important;
+}
+.button.download-button:hover { background-color: #d3d9df; }
+
+
+/* Forms (General & Filters) */
+.form-group { margin-bottom: 15px; } /* Spacing for Upload form */
+label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9em; }
+input[type="text"], input[type="file"], select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 0.95em;
+    margin-bottom: 5px;
+}
+input[type="file"] { padding: 6px; background-color: #fff; }
+select { height: 36px; background-color: #fff; } /* Align height, ensure white background */
+
+/* Filter Form Specific Layout (Display & Plots) */
+#filterForm, .filter-form {
+    margin-bottom: 25px;
+    padding: 15px 20px;
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+#filterForm h2, .filter-form h2 { margin-top: 0; margin-bottom: 15px; font-size: 1.2em;}
+.filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    align-items: end; /* Align form elements bottom */
+}
+.filter-block {} /* Container for label + input */
+.filter-block.submit-block { /* For the Apply button container */
+     grid-column: 1 / -1;
+     text-align: right;
+     margin-top: 10px;
+}
+.form-group-inline { /* For plots page inline filters */
+    display: inline-block;
+    margin-right: 15px;
+    margin-bottom: 10px;
+    vertical-align: bottom;
+}
+.form-group-inline label { font-weight: bold; font-size: 0.9em; }
+.form-group-inline input[type="text"] { min-width: 220px; width: auto; }
+
+.hint { /* Hint text below filters */
+    font-size: 0.85em;
+    color: #666;
+    margin-top: 10px;
+    display: block;
+}
+/* --- Style for the warning message on display.html --- */
+.filter-warning {
+    grid-column: 1 / -1; /* Span full width in the grid */
+    color: #dc3545; /* Red color */
+    font-size: 0.85em; /* Slightly smaller */
+    font-style: italic;
+    margin-top: 10px; /* Space above the message */
+    padding-left: 5px; /* Slight indent */
+}
+
+
+/* Flashed Messages */
+.flashes {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 15px 0;
+}
+.flash {
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    border: 1px solid #f5c6cb; /* Error border */
+    border-radius: 4px;
+    background-color: #f8d7da; /* Error background */
+    color: #721c24; /* Error text */
+    font-size: 0.95em;
+}
+/* Define other categories if needed, e.g., .flash.success */
+
+
+/* Table Styles (for display.html) */
+.table-wrapper {
+    overflow-x: auto; /* Horizontal scroll */
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.log-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9em;
+}
+.log-table th, .log-table td {
+    border: 1px solid #ddd;
+    padding: 9px 12px;
+    text-align: left;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+.log-table thead th {
+    background-color: #e9ecef;
+    font-weight: bold;
+    color: #444;
+    position: sticky;
+    top: 0;
+}
+.log-table tbody tr:nth-child(even) { background-color: #f9f9f9; }
+.log-table tbody tr:hover { background-color: #e8e8e8; }
+.no-results td { text-align: center !important; padding: 30px !important; color: #6c757d; font-style: italic; }
+
+
+/* Pagination Styles (for display.html) */
+.pagination {
+    text-align: center;
+    padding-top: 15px;
+    margin-bottom: 10px;
+}
+.pagination button {
+    padding: 6px 12px;
+    margin: 0 5px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    border-radius: 3px;
+    font-size: 0.9em;
+}
+.pagination button:hover:not(:disabled) { background-color: #eee; }
+.pagination button:disabled { cursor: not-allowed; opacity: 0.5; }
+.pagination span { margin: 0 10px; vertical-align: middle; color: #555; font-size: 0.95em; }
+
+
+/* Plot Page Specific Styles (for plots.html) */
+.plot-selector-area {
+    margin-top: 25px;
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+}
+.plot-selector-area label { margin-right: 8px; font-weight: bold; }
+#plotSelector { /* ID for the dropdown */
+    padding: 7px 10px;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+    min-width: 200px;
+}
+#plotDisplayArea { /* ID for the display div */
+    margin-top: 15px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    background-color: #fdfdfd;
+    min-height: 300px;
+    text-align: center;
+    display: none; /* Hidden initially */
+}
+#plotDisplayArea.visible { display: block; } /* Class added by JS */
+#plotDisplayArea img { max-width: 95%; height: auto; display: block; margin: 0 auto 15px auto; border: 1px solid #eee; }
+#plotDisplayArea h3 { margin-top: 0; margin-bottom: 15px; }
+
+
+/* Navigation & Actions (Common group/link styling) */
+.navigation, .actions { /* Used on Landing, Display, Plots */
+    margin-top: 25px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+    text-align: center;
+}
+.navigation a, .actions a, .button-group a, .button-group button {
+    margin: 0 8px; /* Spacing for links/buttons in these groups */
+}
+
+
+/* Footer (Optional, for landing.html) */
 footer {
     text-align: center;
     margin-top: 30px;
@@ -52,183 +299,4 @@ footer {
     border-top: 1px solid #eee;
     font-size: 0.9em;
     color: #777;
-}
-
-/* Forms */
-.form-group {
-    margin-bottom: 15px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-.form-group input[type="file"],
-.form-group input[type="text"] {
-    width: calc(100% - 22px); /* Adjust for padding/border */
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-.form-group-inline {
-    display: inline-block;
-    margin-right: 15px;
-    margin-bottom: 15px;
-    vertical-align: bottom;
-}
-.form-group-inline label {
-     display: block;
-     margin-bottom: 5px;
-     font-weight: bold;
-}
-.form-group-inline input[type="text"] {
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    min-width: 200px;
-}
-
-.filter-form .hint {
-    font-size: 0.85em;
-    color: #666;
-    clear: both; /* Ensure it appears below inline elements */
-    padding-top: 5px;
-}
-
-
-/* Buttons */
-.button {
-    display: inline-block;
-    background-color: #007bff;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    text-decoration: none;
-    font-size: 1em;
-    margin-right: 10px; /* Space between buttons */
-    margin-bottom: 10px; /* Space below buttons */
-}
-
-.button:hover {
-    background-color: #0056b3;
-    text-decoration: none;
-}
-
-button.button { /* Style submit buttons like links */
-     font-size: 1em;
-}
-
-.download-button {
-    font-size: 0.8em;
-    padding: 5px 10px;
-    margin-top: 10px;
-}
-
-/* Flashed Messages */
-.flashes {
-    list-style: none;
-    padding: 0;
-    margin-bottom: 15px;
-}
-
-.flash {
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    background-color: #f8d7da; /* Reddish for errors/warnings */
-    color: #721c24;
-    border-color: #f5c6cb;
-}
-
-/* Tables */
-.table-container {
-    overflow-x: auto; /* Allows horizontal scrolling for wide tables */
-    margin-top: 20px;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-}
-
-th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-    white-space: nowrap; /* Prevent line breaks within cells */
-}
-
-th {
-    background-color: #f2f2f2;
-    font-weight: bold;
-}
-
-tbody tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-tbody tr:hover {
-    background-color: #e9ecef;
-}
-
-/* Plots */
-.plots-container {
-    display: flex;
-    flex-wrap: wrap; /* Allow plots to wrap on smaller screens */
-    gap: 20px; /* Space between plots */
-    justify-content: space-around; /* Distribute space */
-    margin-top: 20px;
-}
-
-.plot {
-    border: 1px solid #ddd;
-    padding: 15px;
-    background-color: #fdfdfd;
-    border-radius: 5px;
-    text-align: center;
-    flex: 1 1 300px; /* Flex properties for responsiveness */
-    min-width: 280px; /* Minimum width before wrapping */
-}
-
-.plot img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-    margin: 10px auto; /* Center image and add space */
-    border: 1px solid #eee;
-}
-
-.plot h3 {
-    margin-top: 0;
-    font-size: 1.1em;
-    color: #333;
-}
-
-/* Navigation & Actions */
-.navigation, .actions {
-    margin-top: 20px;
-    margin-bottom: 20px;
-    padding-top: 15px;
-    border-top: 1px solid #eee;
-}
-
-.filter-form {
-     border: 1px solid #eee;
-     padding: 15px;
-     margin-bottom: 20px;
-     background: #f9f9f9;
-     border-radius: 5px;
-}
-
-.filter-form h2 {
-    margin-top: 0;
-    border-bottom: none;
-    font-size: 1.2em;
 }
