@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Log Visualizations - {{ filename }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <style> /* Simplified CSS (as provided before) */ </style>
+    <style>  </style>
 </head>
 <body>
     <div class="container wide">
@@ -13,15 +13,12 @@
         {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} <ul class="flashes"> {% for category, message in messages %} <li class="flash">{{ message }}</li> {% endfor %} </ul> {% endif %} {% endwith %}
         <!-- Action Buttons -->
         <div class="actions">
-             {# *** CORRECTED: Use function name 'display_log' *** #}
              <a href="{{ url_for('display_log', filename=filename) }}" class="button">View Data Table</a>
-             {# *** CORRECTED: Use function name 'upload' for GET /uploads *** #}
              <a href="{{ url_for('upload') }}" class="button">Upload Another File</a>
         </div>
         <!-- Filter Form -->
         <div class="filter-form">
             <h2>Filter Data by Date Range</h2>
-             {# *** CORRECTED: Use function name 'plots' for POST action *** #}
             <form method="POST" action="{{ url_for('plots', filename=filename) }}">
                  <div class="form-group-inline"> <label for="from">From Date:</label> <input type="text" id="from" name="from" placeholder="e.g., Nov 23 22:29:28 2005" value="{{ from_date }}"> </div>
                  <div class="form-group-inline"> <label for="to">To Date:</label> <input type="text" id="to" name="to" placeholder="e.g., Jan 18 02:06:40 2006" value="{{ to_date }}"> </div>
@@ -38,18 +35,69 @@
          <div class="navigation"> <a href="{{ url_for('landing') }}">Home</a> </div>
     </div>
     <script>
-        // Simplified JS (as provided before)
-        var plotSelect = document.getElementById('plotSelector'); var displayArea = document.getElementById('plotDisplayArea'); var titleElement = document.getElementById('plotTitle'); var imageElement = document.getElementById('plotImage'); var downloadLink = document.getElementById('plotDownloadLink');
-        var baseFilename = "{{ filename }}"; var imageBase = "{{ url_for('static', filename='images/') }}";
+        // Get references to the DOM elements
+        var plotSelect = document.getElementById('plotSelector');
+        var displayArea = document.getElementById('plotDisplayArea');
+        var titleElement = document.getElementById('plotTitle');
+        var imageElement = document.getElementById('plotImage');
+        var downloadLink = document.getElementById('plotDownloadLink');
         
+        // Template placeholders for filenames and URLs
+        var baseFilename = "{{ filename }}";  // Filename passed from Flask
+        var imageBase = "{{ url_for('static', filename='images/') }}";  // Base URL for static images
+        
+        // Base URL for downloading the plot
         var downloadBase = "{{ url_for('download_plot', filename='_PLACEHOLDER_') }}".replace('_PLACEHOLDER_', '');
-        plotSelect.onchange = function() { /* ... rest of JS as before ... */
-            var selected = plotSelect.value; var imageSrc = ""; var downloadHref = "#"; var plotTitleText = ""; var imgAlt = "Plot"; var makeVisible = false;
-            if (selected === "event_freq") { plotTitleText = "Event Frequency Over Time"; imageSrc = imageBase + baseFilename + "-event_distro.png"; downloadHref = downloadBase + baseFilename + "-event_distro.png"; imgAlt = "Event Frequency Plot"; makeVisible = true; }
-            else if (selected === "level_dist") { plotTitleText = "Level State Distribution"; imageSrc = imageBase + baseFilename + "-level-count.png"; downloadHref = downloadBase + baseFilename + "-level-count.png"; imgAlt = "Level Distribution Plot"; makeVisible = true; }
-            else if (selected === "event_code") { plotTitleText = "Event Code Distribution"; imageSrc = imageBase + baseFilename + "-event-freq.png"; downloadHref = downloadBase + baseFilename + "-event-freq.png"; imgAlt = "Event Code Plot"; makeVisible = true; }
-            titleElement.textContent = plotTitleText; imageElement.src = imageSrc ? imageSrc + "?r=" + Math.random() : ""; imageElement.alt = imgAlt; downloadLink.href = downloadHref;
-            if (makeVisible) { displayArea.style.display = 'block'; imageElement.style.display = 'block'; downloadLink.style.display = 'inline-block'; } else { displayArea.style.display = 'none'; } };
+        
+        // Event listener for when the user changes the plot selection
+        plotSelect.onchange = function() {
+            // Initialize variables
+            var selected = plotSelect.value;  // The selected plot type
+            var imageSrc = "";  // The source URL for the plot image
+            var downloadHref = "#";  // The URL for downloading the plot
+            var plotTitleText = "";  // The title of the plot
+            var imgAlt = "Plot";  // The alternative text for the image
+            var makeVisible = false;  // Whether the plot display area should be visible
+            
+            // Check which plot type is selected and set corresponding values
+            if (selected === "event_freq") {
+                plotTitleText = "Event Frequency Over Time";
+                imageSrc = imageBase + baseFilename + "-event_distro.png";
+                downloadHref = downloadBase + baseFilename + "-event_distro.png";
+                imgAlt = "Event Frequency Plot";
+                makeVisible = true;
+            }
+            else if (selected === "level_dist") {
+                plotTitleText = "Level State Distribution";
+                imageSrc = imageBase + baseFilename + "-level-count.png";
+                downloadHref = downloadBase + baseFilename + "-level-count.png";
+                imgAlt = "Level Distribution Plot";
+                makeVisible = true;
+            }
+            else if (selected === "event_code") {
+                plotTitleText = "Event Code Distribution";
+                imageSrc = imageBase + baseFilename + "-event-freq.png";
+                downloadHref = downloadBase + baseFilename + "-event-freq.png";
+                imgAlt = "Event Code Plot";
+                makeVisible = true;
+            }
+    
+            // Update the content based on the selected plot type
+            titleElement.textContent = plotTitleText;  // Set the plot title
+            imageElement.src = imageSrc ? imageSrc + "?r=" + Math.random() : "";  // Set the plot image source with cache-busting
+            imageElement.alt = imgAlt;  // Set the image alt text
+            downloadLink.href = downloadHref;  // Set the download link URL
+    
+            // Toggle visibility based on the selected plot
+            if (makeVisible) {
+                displayArea.style.display = 'block';  // Show the plot display area
+                imageElement.style.display = 'block';  // Show the plot image
+                downloadLink.style.display = 'inline-block';  // Show the download link
+            } else {
+                displayArea.style.display = 'none';  // Hide the plot display area if no plot is selected
+            }
+        };
     </script>
+    
 </body>
 </html>

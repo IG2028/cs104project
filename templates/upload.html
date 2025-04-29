@@ -116,13 +116,8 @@
             const files = e.dataTransfer.files;
             if (files.length > 0) {
                 // Only accept the first file if multiple are dropped
-            //    if (files[0].name.endsWith('.log')) {
-                    fileInput.files = files; // Assign the dropped file(s) to the hidden input
+                    fileInput.files = files; // Assign the dropped file to the hidden input
                     displayFileInfo(files[0]); // Update the display
-              //  } else {
-              //      alert('Please drop a .log file.');
-              //      clearFileInfo();
-              //  }
             }
         });
 
@@ -136,11 +131,7 @@
             if (fileInput.files.length > 0) {
                  if (fileInput.files[0].name.endsWith('.log')) {
                     displayFileInfo(fileInput.files[0]);
-                  }// else {
-                //      alert('Please select a .log file.');
-                //      fileInput.value = ''; // Clear the invalid selection
-                //      clearFileInfo();
-                //  }
+                  }
             } else {
                 clearFileInfo();
             }
@@ -154,7 +145,7 @@
          // Function to clear file info
         function clearFileInfo() {
             fileInfo.textContent = 'No file selected.';
-            // Important: If using the same input after an error, clear its value
+            //If using the same input after an error, clear its value
              if(fileInput.value) {
                 try {
                     fileInput.value = ''; // For modern browsers
@@ -170,15 +161,17 @@
             }
         }
 
-        // Optional: Prevent form submission if no file is selected (client-side check)
+        // Prevent form submission if no file is selected (client-side check)
         uploadForm.addEventListener('submit', (e) => {
             if (fileInput.files.length === 0) {
                 alert('Please select or drop a log file before uploading.');
                 e.preventDefault(); // Stop the form submission
-            }// } else if (!fileInput.files[0].name.endsWith('.log')) {
-            //      alert('Invalid file type. Please select a .log file.');
-            //      e.preventDefault(); // Stop the form submission
-            // }
+            }
+            
+            else if (!fileInput.files[0].name.endsWith('.log')) {
+                  alert('Invalid file type. Please select a .log file.');
+                  e.preventDefault(); // Stop the form submission
+             }
         });
 
     </script>

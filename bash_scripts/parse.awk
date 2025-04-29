@@ -4,24 +4,27 @@ BEGIN {
     print "LineId", "Time", "Level", "Content", "EventId", "EventTemplate"
 }
 {
-    time_part1 = substr($1, 2)
+    time_part1 = substr($1, 2) #remove the [
     time_part2 = $2
     time_part3 = $3
     time_part4 = $4
-    time_part5 = substr($5, 1, length($5) - 1)
+    time_part5 = substr($5, 1, length($5) - 1) #remove the ]
     time_stamp = time_part1 " " time_part2 " " time_part3 " " time_part4 " " time_part5
 
-    level = substr($6, 2, length($6) - 2)
+    level = substr($6, 2, length($6) - 2) #remove the []
 
+    #take the rest of the text in the line and make it content
     Content = ""
     for (i = 7; i <= NF; i++) {
         Content = Content $i " "
     }
+
     Content = substr(Content, 1, length(Content) - 1)
 
     Eventid = ""
     EventTemp = ""
 
+    #check the event field of line by matching Content
     if (Content ~ /^workerEnv.init\(\) ok .*/) {
         Eventid = "E2"
         EventTemp = "workerEnv.init() ok <*>"
