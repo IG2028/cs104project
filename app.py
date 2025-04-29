@@ -139,6 +139,52 @@ def download_plot(filename):
 @app.route('/plots/<filename>',methods=['GET','POST'])
 def plots(filename):
     csvPath=os.path.join(PROCESSED,filename)
+
+    # data=np.genfromtxt(csvPath,dtype=str,delimiter=",",skip_header=1)
+
+    # levels=data[:,2]
+    # timestamps=data[:,1]
+    # events=data[:,4]
+
+    # time_plot_path= os.path.join('static/images',f"{filename}_event_time_plot.png")
+    # level_plot_path= os.path.join('static/images',f"{filename}_level_distribution.png")
+    # event_plot_path= os.path.join('static/images',f"{filename}_event_code_distribution.png")
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     Time=[]
 #    time_format=['Month','Day','Date','Time','Year']            
     with open(csvPath,'r') as file:
@@ -179,9 +225,10 @@ def plots(filename):
                     eventCount[event]+=1
     
     sortedEvents=sorted(eventCount.keys())
-
+    #x=np.array(filtered_timestamps)
+    
     x1=np.array(filtered_timestamps)
-    y1=np.array([timeCount[key] for key in filtered_timestamps])
+    y1=np.array([timeCount[x] if x in timeCount else 0 for x in filtered_timestamps])
     x2=np.array([level for level in levelCount.keys()])
     y2=np.array([levelCount[level] for level in levelCount.keys()])
     x3=np.array([event for event in sortedEvents])
@@ -196,7 +243,7 @@ def plots(filename):
 
 
 def plot_events_vs_time(x1,y1,filename):
-    plt.figure(figsize=(10,4))
+    plt.figure(figsize=(12,5))
     plt.plot(x1,y1,marker="o")
     plt.xticks(rotation=90)
     plt.grid(linewidth='0.5')
@@ -208,7 +255,7 @@ def plot_events_vs_time(x1,y1,filename):
     plt.close()
 
 def plot_level_distribution(x2,y2,filename):
-    plt.figure(figsize=(5,5))
+    plt.figure(figsize=(6,6))
     plt.pie(y2,labels=x2,autopct='%.2f%%',startangle=90)
     # plt.xlabel()
     # plt.ylabel()
@@ -218,7 +265,7 @@ def plot_level_distribution(x2,y2,filename):
     plt.close()
 
 def plot_event_code_distribution(x3,y3,filename):
-    plt.figure(figsize=(4,8))
+    plt.figure(figsize=(max(5,len(x3)*0.6),6))
     plt.bar(x3,y3,width=0.5,color='skyblue')
     # plt.xlabel()
     # plt.ylabel()
@@ -226,6 +273,28 @@ def plot_event_code_distribution(x3,y3,filename):
     plt.tight_layout()
     plt.savefig(f'static/images/{filename}-event-freq.png')
     plt.close()
+
+def get_secs_from_timestamp(timestamp):
+    Month_map={
+        'Jan':0,'Feb':1,'Mar':2,'Apr':3,'May':4,'Jun':5,
+        'Jul':6,'Aug':7,'Sep':8,'Oct':9,'Nov':10,'Dec':11
+    }
+    timestamp=timestamp.strip()
+    parts=timestamp.split(" ")
+
+    parts=list(parts)
+    if len(parts)==5:
+            day, month, date, time, year = parts
+    elif len(parts)==4:
+            month, date, time, year = parts
+        
+    h,m,s = map(int,time.split(":"))
+    totalSeconds = 3600*h + 60*m + s
+
+    return totalSeconds
+        
+
+
             
 if __name__=="__main__":
     app.run(debug=True)
