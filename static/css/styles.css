@@ -1,0 +1,307 @@
+/* --- static/css/styles.css --- */
+/* Consolidated & Polished Styles */
+
+/* Basic Reset & Defaults */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0; /* No padding on body itself */
+    background-color: #f8f9fa; /* Lighter gray background */
+    color: #212529; /* Bootstrap's default dark text */
+    -webkit-font-smoothing: antialiased; /* Smoother fonts */
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Main Content Container */
+.container {
+    max-width: 1200px;
+    margin: 30px auto; /* More vertical space */
+    background-color: #ffffff;
+    padding: 30px 35px; /* Generous padding */
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Softer shadow */
+    border: 1px solid #e9ecef; /* Very light border */
+}
+.container.wide {
+    max-width: 1500px; /* Allow wider for tables/plots */
+}
+
+/* Headings */
+h1, h2, h3 {
+    color: #343a40; /* Slightly lighter dark */
+    margin-top: 0;
+    margin-bottom: 0.75em; /* Consistent bottom margin */
+    font-weight: 500; /* Medium weight */
+}
+h1 {
+    font-size: 2rem;
+    padding-bottom: 0.5em;
+    margin-bottom: 1em;
+    border-bottom: 1px solid #dee2e6; /* Clearer separator */
+    text-align: center; /* Center main titles */
+}
+h2 {
+    font-size: 1.6rem;
+    margin-top: 1.8em;
+    margin-bottom: 1em;
+    padding-bottom: 0.3em;
+    border-bottom: 1px solid #e9ecef; /* Lighter separator for sections */
+}
+h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.8em;
+    color: #495057; /* Slightly lighter for sub-heads */
+}
+/* Specific H2 for Display page title */
+.table-heading {
+     font-size: 1.7rem;
+     border-bottom-style: solid;
+     text-align: left;
+     margin-bottom: 1.2em;
+}
+
+/* Paragraphs, Links, Code */
+p {
+    margin-bottom: 1.2em;
+    color: #495057; /* Softer text color */
+}
+a {
+    color: #007bff; /* Bootstrap primary blue */
+    text-decoration: none;
+    transition: color 0.15s ease-in-out;
+}
+a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+code {
+    font-size: 0.875em;
+    color: #c7254e; /* Bootstrap code color */
+    background-color: #f9f2f4; /* Light pinkish background */
+    border-radius: 4px;
+    padding: 0.2em 0.4em;
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+.highlight { /* For filename highlight */
+     color: #007bff;
+     font-weight: 600;
+}
+
+
+/* Buttons */
+.button {
+    display: inline-block;
+    padding: 0.5rem 1rem; /* Use rem for better scaling */
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+    border: 1px solid transparent;
+    border-radius: 0.25rem; /* Standard border radius */
+    color: #fff !important; /* White text usually */
+    background-color: #6c757d; /* Default gray */
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 400;
+    text-align: center;
+    vertical-align: middle;
+    user-select: none; /* Prevent text selection */
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+.button:hover {
+    filter: brightness(90%); /* Simple hover effect */
+}
+.button:focus { /* Basic focus style */
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.5); /* Gray focus ring */
+}
+/* Color Variants */
+.button.blue { background-color: #007bff; border-color: #007bff; }
+.button.blue:hover { background-color: #0069d9; border-color: #0062cc; }
+.button.blue:focus { box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.5); }
+
+.button.dark { background-color: #343a40; border-color: #343a40; }
+.button.dark:hover { background-color: #23272b; border-color: #1d2124; }
+.button.dark:focus { box-shadow: 0 0 0 0.2rem rgba(82, 88, 93, 0.5); }
+
+.button.green { background-color: #28a745; border-color: #28a745; }
+.button.green:hover { background-color: #218838; border-color: #1e7e34; }
+.button.green:focus { box-shadow: 0 0 0 0.2rem rgba(72, 180, 97, 0.5); }
+
+.button.download-button { /* Plots page download */
+    font-size: 0.9em;
+    padding: 0.375rem 0.75rem;
+    background-color: #6c757d; /* Gray */
+    border-color: #6c757d;
+}
+.button.download-button:hover { background-color: #5a6268; border-color: #545b62; }
+
+
+/* Forms (General & Filters) */
+.form-group { margin-bottom: 1rem; }
+label { display: inline-block; /* Allows margin bottom */ margin-bottom: 0.5rem; font-weight: 500; }
+input[type="text"], input[type="file"], select {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+input[type="text"]::placeholder { color: #6c757d; opacity: 1; }
+input[type="file"] { padding: 0.375rem 0.75rem; }
+select { height: calc(1.5em + 1rem + 2px); /* Match text input height */ }
+input[type="text"]:focus, select:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Filter Form Specific Layout */
+#filterForm, .filter-form {
+    margin-bottom: 1.5rem;
+    padding: 1.25rem 1.5rem;
+    background-color: #f8f9fa; /* Slightly off-white */
+    border: 1px solid #dee2e6;
+    border-radius: 0.3rem;
+}
+#filterForm h2, .filter-form h2 { margin-top: 0; margin-bottom: 1.25rem; font-size: 1.3rem; border-bottom: none; }
+.filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem 1.25rem; /* row col */
+    align-items: end;
+}
+.filter-block {} /* Grid item */
+.filter-block label { font-size: 0.9em; } /* Slightly smaller label */
+.filter-block.submit-block {
+     grid-column: 1 / -1;
+     text-align: right;
+     margin-top: 0.5rem;
+}
+.form-group-inline { /* For plots page inline filters */
+    display: inline-block;
+    margin-right: 1rem;
+    margin-bottom: 0.5rem;
+    vertical-align: bottom;
+}
+.form-group-inline label { font-size: 0.9em; margin-bottom: 0.3rem;}
+.form-group-inline input[type="text"] { min-width: 240px; width: auto; display: inline-block;} /* Adjust width */
+
+.hint { /* Hint text */
+    font-size: 0.875em;
+    color: #6c757d;
+    margin-top: 0.8rem;
+    display: block;
+}
+/* Warning message on display.html filter */
+.filter-warning {
+    grid-column: 1 / -1;
+    color: #dc3545;
+    font-size: 0.875em;
+    font-style: italic;
+    margin-top: 0.5rem;
+    padding-left: 0; /* No extra padding needed */
+    text-align: left;
+}
+
+
+/* Flashed Messages */
+.flashes { list-style: none; padding: 0; margin: 0 0 1rem 0; }
+.flash {
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+    font-size: 1rem;
+}
+/* Bootstrap alert colors (example) */
+.flash.error, .flash { /* Default to error style if no category */
+    color: #721c24; background-color: #f8d7da; border-color: #f5c6cb;
+}
+.flash.success {
+    color: #155724; background-color: #d4edda; border-color: #c3e6cb;
+}
+.flash.warning {
+    color: #856404; background-color: #fff3cd; border-color: #ffeeba;
+}
+
+
+/* Table Styles */
+.table-wrapper { overflow-x: auto; margin-bottom: 1.5rem; border: 1px solid #dee2e6; border-radius: 0.3rem; }
+.log-table { width: 100%; border-collapse: collapse; background-color: #fff; }
+.log-table th, .log-table td {
+    border: 1px solid #dee2e6;
+    padding: 0.75rem 1rem; /* Adjust padding */
+    text-align: left;
+    white-space: nowrap;
+    vertical-align: middle;
+    font-size: 0.9rem;
+}
+.log-table thead th {
+    background-color: #e9ecef;
+    font-weight: 600;
+    color: #495057;
+    position: sticky; top: 0; /* Sticky header */
+    z-index: 10; /* Ensure header stays above scrolling content */
+}
+.log-table tbody tr { border-bottom: 1px solid #dee2e6; } /* Row separator */
+.log-table tbody tr:nth-child(even) { background-color: #f8f9fa; } /* Zebra */
+.log-table tbody tr:hover { background-color: #e2e6ea; } /* Hover */
+.no-results td { text-align: center !important; padding: 2rem !important; color: #6c757d; font-style: italic; }
+
+
+/* Pagination Styles */
+.pagination { text-align: center; padding-top: 1rem; margin-bottom: 0.5rem; }
+.pagination button {
+    padding: 0.375rem 0.75rem; margin: 0 0.3rem; cursor: pointer;
+    border: 1px solid #ced4da; background-color: #fff; border-radius: 0.25rem;
+    font-size: 0.9rem; line-height: 1.5;
+    transition: background-color 0.15s ease-in-out;
+}
+.pagination button:hover:not(:disabled) { background-color: #e9ecef; }
+.pagination button:disabled { cursor: not-allowed; opacity: 0.65; }
+.pagination span { margin: 0 0.75rem; vertical-align: middle; color: #495057; font-size: 1rem; }
+
+
+/* Plot Page Specific Styles */
+.plot-selector-area { margin-top: 1.5rem; margin-bottom: 1rem; padding: 0.75rem 1rem; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 0.3rem; }
+.plot-selector-area label { margin-right: 0.5rem; font-weight: 500; }
+#plotSelector { padding: 0.5rem 0.75rem; border-radius: 0.25rem; border: 1px solid #ced4da; min-width: 250px; font-size: 1rem; }
+#plotDisplayArea { margin-top: 1rem; padding: 1.5rem; border: 1px solid #dee2e6; border-radius: 0.3rem; background-color: #fff; min-height: 350px; text-align: center; display: none; }
+#plotDisplayArea.visible { display: block; }
+#plotDisplayArea img { max-width: 100%; height: auto; display: block; margin: 0 auto 1rem auto; border: 1px solid #e9ecef; }
+#plotDisplayArea h3 { margin-top: 0; margin-bottom: 1rem; font-size: 1.3rem; }
+
+
+/* Navigation & Actions (Common group/link styling) */
+.navigation, .actions, .button-group {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e9ecef;
+    text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem; /* Consistent gap */
+    justify-content: center; /* Center items */
+}
+/* Override text-align for specific groups if needed */
+.actions { justify-content: flex-start; } /* Align action buttons left */
+.button-group { justify-content: flex-start; } /* Align display page buttons left */
+
+
+/* Footer (Optional, for landing.html) */
+footer { text-align: center; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #dee2e6; font-size: 0.9em; color: #6c757d; }
+
+/* Utility Classes (Optional) */
+.error-message { color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 0.75rem 1.25rem; border-radius: 0.25rem; margin-bottom: 1rem; }

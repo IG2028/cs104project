@@ -1,12 +1,37 @@
-<h1>Welcome</h1>
-<a href="{{ url_for('upload') }}">Upload Logs</a>
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <ul class="flashes">
-      {% for message in messages %}
-        <li>{{ message }}</li>
-      {% endfor %}
-    </ul>
-  {% endif %}
-{% endwith %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log File Analyzer - Welcome</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to the Log File Analyzer</h1>
+        <p>
+            This tool allows you to upload log files (specifically Apache logs in the expected format),
+            process them, view the structured data.
+        </p>
 
+        <!-- Display flashed messages -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flashes">
+                {% for message in messages %}
+                    <li class="flash">{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        <div class="navigation">
+            <a href="{{ url_for('upload') }}" class="button">Upload a Log File</a>
+        </div>
+
+        <footer>
+            <p>Log File Analysis Project</p>
+        </footer>
+    </div>
+</body>
+</html>
